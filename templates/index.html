@@ -1,59 +1,584 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Converter</title>
+    <title>FileConverter Pro - Convert Files Online</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #4B6BFB;
+            --primary-dark: #3451e0;
+            --secondary: #6C757D;
+            --success: #28A745;
+            --danger: #DC3545;
+            --background: #F8F9FA;
+            --white: #FFFFFF;
+            --border: #E9ECEF;
+            --text: #212529;
+            --text-light: #6C757D;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--white);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .container {
-            background-color: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
         }
-        .form-group {
-            margin-bottom: 15px;
+
+        /* Main Content */
+        .main-container {
+            max-width: 1200px;
+            margin: 6rem auto 2rem;
+            padding: 0 2rem;
         }
-        select, input[type="file"], button {
-            margin: 10px 0;
-            padding: 8px;
+
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
         }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), #8e2de2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Converter Box */
+        .converter-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+
+        .conversion-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .conversion-type {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
             cursor: pointer;
-            border-radius: 4px;
+            transition: all 0.3s ease;
         }
-        button:hover {
-            background-color: #45a049;
+
+        .conversion-type:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(75, 107, 251, 0.1);
+        }
+
+        .conversion-type.active {
+            background: linear-gradient(135deg, var(--primary), #8e2de2);
+            border-color: transparent;
+            color: var(--white);
+        }
+
+        .conversion-type i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .conversion-type .label {
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--background);
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-area:hover, .upload-area.drag-over {
+            border-color: var(--primary);
+            background: rgba(75, 107, 251, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .upload-area h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .upload-area p {
+            color: var(--text-light);
+        }
+
+        /* Selected File */
+        .selected-file {
+            background: var(--background);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        .selected-file i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        /* Convert Button */
+        .convert-button {
+            background: linear-gradient(135deg, var(--primary), #8e2de2);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            padding: 1.2rem;
+            width: 100%;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .convert-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(75, 107, 251, 0.2);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 0;
+            background: var(--white);
+            margin-top: 4rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 16px;
+            background: var(--background);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+        }
+
+        /* Loading Spinner */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Error Message */
+        .error-message {
+            background: #FFF5F5;
+            color: var(--danger);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        /* Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .main-container {
+                padding: 0 1rem;
+                margin-top: 5rem;
+            }
+
+            .hero {
+                padding: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .conversion-types {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .converter-wrapper {
+                padding: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>File Converter</h1>
-        <form action="/convert" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="conversion_type">Select Conversion Type:</label>
-                <select name="conversion_type" id="conversion_type" required>
-                    <option value="word2pdf">Word to PDF</option>
-                    <option value="pdf2word">PDF to Word</option>
-                </select>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-exchange-alt"></i>
+                FileConverter Pro
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="hero">
+            <h1>Convert Files Like a Pro</h1>
+            <p>Fast, secure, and high-quality file conversion. Transform your documents and images instantly.</p>
+        </div>
+
+        <div id="error-message" class="error-message"></div>
+
+        <form action="{{ url_for('convert_file') }}" method="post" enctype="multipart/form-data" id="conversion-form">
+            <div class="converter-wrapper">
+                <div class="conversion-types">
+                    <div class="conversion-type active" data-value="word2pdf">
+                        <i class="fas fa-file-word"></i>
+                        <div class="label">Word to PDF</div>
+                    </div>
+                    <div class="conversion-type" data-value="pdf2word">
+                        <i class="fas fa-file-pdf"></i>
+                        <div class="label">PDF to Word</div>
+                    </div>
+                    <div class="conversion-type" data-value="img2pdf">
+                        <i class="fas fa-image"></i>
+                        <div class="label">Image to PDF</div>
+                    </div>
+                    <div class="conversion-type" data-value="pdf2img">
+                        <i class="fas fa-file-image"></i>
+                        <div class="label">PDF to Image</div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="conversion_type" id="conversion_type" value="word2pdf">
+
+                <div class="upload-area" id="upload-area">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h3>Drop your file here</h3>
+                    <p>or click to browse from your computer</p>
+                    <input type="file" name="file" id="file" class="file-input" required style="display: none;">
+                </div>
+
+                <div class="selected-file" id="selected-file">
+                    <i class="fas fa-file"></i>
+                    <span id="filename"></span>
+                </div>
+
+                <button type="submit" class="convert-button" id="convert-btn">
+                    Convert Now
+                </button>
             </div>
-            <div class="form-group">
-                <label for="file">Select File:</label>
-                <input type="file" name="file" id="file" required>
-            </div>
-            <button type="submit">Convert</button>
         </form>
+
+        <!-- Features Section -->
+        <section class="features">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Lightning Fast</h3>
+                    <p>Convert your files within seconds with our optimized conversion engine</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-lock"></i>
+                    <h3>100% Secure</h3>
+                    <p>Your files are automatically deleted after conversion for complete privacy</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>High Quality</h3>
+                    <p>Get perfect conversion results while maintaining the original quality</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-spinner">
+        <div class="spinner"></div>
     </div>
+
+    <script>
+        // File selection handling
+        document.getElementById('file').addEventListener('change', function(e) {
+            const filename = e.target.files[0]?.name || '';
+            if (filename) {
+                document.getElementById('filename').textContent = filename;
+                document.getElementById('selected-file').style.display = 'flex';
+            }
+        });
+
+        // Upload area click handling
+        document.getElementById('upload-area').addEventListener('click', function() {
+            document.getElementById('file').click();
+        });
+
+        // Drag and drop handling
+        const uploadArea = document.getElementById('upload-area');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.add('drag-over');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.remove('drag-over');
+            });
+        });
+
+        uploadArea.addEventListener('drop', handleDrop);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            document.getElementById('file').files = files;
+
+            if (files[0]) {
+                document.getElementById('filename').textContent = files[0].name;
+                document.getElementById('selected-file').style.display = 'flex';
+            }
+        }
+
+        // Conversion type selection
+        document.querySelectorAll('.conversion-type').forEach(type => {
+            type.addEventListener('click', () => {
+                // Remove active class from all conversion types
+                document.querySelectorAll('.conversion-type').forEach(t => t.classList.remove('active'));
+
+                // Add active class to clicked type
+                type.classList.add('active');
+
+                // Update hidden input value
+                document.getElementById('conversion_type').value = type.dataset.value;
+
+                // Hide any error messages
+                document.getElementById('error-message').style.display = 'none';
+
+                // Reset file selection
+                document.getElementById('file').value = '';
+                document.getElementById('selected-file').style.display = 'none';
+                document.getElementById('filename').textContent = '';
+            });
+        });
+
+        // Form submission handling
+        document.getElementById('conversion-form').addEventListener('submit', function(e) {
+            const fileInput = document.getElementById('file');
+            const conversionType = document.getElementById('conversion_type').value;
+            const errorMessage = document.getElementById('error-message');
+
+            // Validate file selection
+            if (!fileInput.files || fileInput.files.length === 0) {
+                e.preventDefault();
+                errorMessage.textContent = 'Please select a file to convert';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Validate file type
+            const file = fileInput.files[0];
+            const fileName = file.name.toLowerCase();
+            const allowedExtensions = {
+                'word2pdf': ['.docx', '.doc'],
+                'pdf2word': ['.pdf'],
+                'img2pdf': ['.jpg', '.jpeg', '.png'],
+                'pdf2img': ['.pdf']
+            };
+
+            const isValidExtension = allowedExtensions[conversionType].some(ext =>
+                fileName.endsWith(ext)
+            );
+
+            if (!isValidExtension) {
+                e.preventDefault();
+                errorMessage.textContent = `Please select a valid file type for ${conversionType} conversion`;
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Show loading spinner
+            document.getElementById('loading-spinner').style.display = 'flex';
+        });
+
+        // Handle flash messages
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = "{{ messages[0] }}";
+                errorMessage.style.display = 'block';
+
+                // Hide loading spinner if there's an error
+                document.getElementById('loading-spinner').style.display = 'none';
+            {% endif %}
+        {% endwith %}
+
+        // Prevent accidental file drops outside the upload area
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            document.body.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        // Add file size validation
+        document.getElementById('file').addEventListener('change', function(e) {
+            const file = this.files[0];
+            const maxSize = 50 * 1024 * 1024; // 50MB
+            const errorMessage = document.getElementById('error-message');
+
+            if (file.size > maxSize) {
+                this.value = '';
+                errorMessage.textContent = 'File size exceeds 50MB limit';
+                errorMessage.style.display = 'block';
+                document.getElementById('selected-file').style.display = 'none';
+            } else {
+                errorMessage.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
