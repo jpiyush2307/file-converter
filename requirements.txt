@@ -1,4 +1,8 @@
 flask
-docx2pdf
+pillow
 pdf2docx
-gunicorn
+img2pdf
+PyPDF2
+python-docx
+docx2pdf
+PyMuPDF
