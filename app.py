@@ -9,8 +9,6 @@ from PIL import Image
 import img2pdf
 import io
 from docx2pdf import convert as docx2pdf_convert
-from PyPDF2 import PdfReader, PdfWriter
-from pdf2image import convert_from_bytes
 import fitz  # PyMuPDF
 
 # Configure logging
